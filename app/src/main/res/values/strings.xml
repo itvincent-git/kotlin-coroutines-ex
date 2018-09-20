@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">kotlin-coroutines-sample</string>
+    <string name="title_activity_base_coroutine">BaseCoroutineActivity</string>
+</resources>
