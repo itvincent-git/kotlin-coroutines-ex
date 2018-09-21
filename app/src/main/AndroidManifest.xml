@@ -18,8 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".BaseCoroutineActivity" android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".BaseCoroutineActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".MultiRequestActivity"></activity>
     </application>
 
 </manifest>

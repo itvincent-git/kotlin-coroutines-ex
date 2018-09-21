@@ -4,12 +4,13 @@ import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.OnLifecycleEvent
-import kotlinx.coroutines.experimental.CoroutineScope
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.*
 import net.kotlin.coroutines.sample.LogUtil
+import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.experimental.EmptyCoroutineContext
 
 /**
+ * 协程支持生命周期
  * Created by zhongyongsheng on 2018/9/20.
  */
 class CoroutineLifecycle {
@@ -34,13 +35,25 @@ class CoroutineLifecycle {
                     //cancel the coroutine
                     deferred.cancel()
                 }
+                if (lifecycleOwner.lifecycle.currentState == Lifecycle.Event.ON_DESTROY) {
+                    lifecycleOwner.lifecycle.removeObserver(this)
+                    return
+                }
             }
         })
     }
 }
 
-fun <T> asyncWithLifecycle(lifecycleOwner: LifecycleOwner, block: suspend CoroutineScope.() -> T): Deferred<T> {
-    val job = async(block = block)
+/**
+ * 执行异步任务并绑定生命周期
+ */
+fun <T> GlobalScope.asyncWithLifecycle(lifecycleOwner: LifecycleOwner,
+                           context: CoroutineContext = EmptyCoroutineContext,
+                           start: CoroutineStart = CoroutineStart.DEFAULT,
+                           onCompletion: CompletionHandler? = null,
+                           block: suspend CoroutineScope.() -> T): Deferred<T> {
+    val job = GlobalScope.async(context, start, onCompletion, block)
     CoroutineLifecycle().observe(lifecycleOwner, job)
     return job
 }
+

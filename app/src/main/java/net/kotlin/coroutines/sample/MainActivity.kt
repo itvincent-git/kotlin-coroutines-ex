@@ -7,9 +7,11 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import net.kotlin.coroutines.lib.tryCatch
+import org.w3c.dom.Text
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,7 +25,10 @@ class MainActivity : AppCompatActivity() {
         rv_activities.layoutManager = LinearLayoutManager(this)
         rv_activities.adapter = object: RecyclerView.Adapter<ActivitiesViewHolder?>() {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ActivitiesViewHolder {
-                return ActivitiesViewHolder(TextView(parent.context))
+                val linearLayout = LinearLayout(parent.context)
+                linearLayout.minimumHeight = 100
+                linearLayout.addView(TextView(parent.context).apply { id = R.id.tv })
+                return ActivitiesViewHolder(linearLayout)
             }
 
             override fun getItemCount(): Int {
@@ -32,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onBindViewHolder(holder: ActivitiesViewHolder, position: Int) {
                 holder.textView.text = activities[position].name
-                holder.textView.setOnClickListener {
+                holder.linearLayout.setOnClickListener {
                     startActivity(Intent(this@MainActivity, tryCatch { Class.forName(activities[position].name) }))
                 }
             }
@@ -41,6 +46,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    class ActivitiesViewHolder(val textView: TextView): RecyclerView.ViewHolder(textView) {
+    class ActivitiesViewHolder(val linearLayout: LinearLayout): RecyclerView.ViewHolder(linearLayout) {
+        val textView = linearLayout.findViewById<TextView>(R.id.tv)
     }
 }
