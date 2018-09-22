@@ -57,7 +57,7 @@ fun <T> GlobalScope.asyncWithLifecycle(lifecycleOwner: LifecycleOwner,
 /**
  * 为协程block绑定lifecycle生命周期
  */
-fun <T> GlobalScope.bindLifecycle(lifecycleOwner: LifecycleOwner,
+inline fun <T> GlobalScope.bindLifecycle(lifecycleOwner: LifecycleOwner,
                                        block: CoroutineScope.() -> Deferred<T>): Deferred<T> {
     val job = block.invoke(this)
     net.kotlin.coroutines.lib.CoroutineLifecycle().observe(lifecycleOwner, job)
