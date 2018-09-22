@@ -21,7 +21,8 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        val activities = packageManager.getPackageInfo(getPackageName(), PackageManager.GET_ACTIVITIES).activities/*.filter { !it.name.contains("MainActivity") }*/
+        val activities = packageManager.getPackageInfo(getPackageName(), PackageManager.GET_ACTIVITIES).activities
+                .filter { !it.name.contains(this@MainActivity.localClassName) }
         rv_activities.layoutManager = LinearLayoutManager(this)
         rv_activities.adapter = object: RecyclerView.Adapter<ActivitiesViewHolder?>() {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ActivitiesViewHolder {
