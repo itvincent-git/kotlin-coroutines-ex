@@ -64,7 +64,7 @@ class BaseCoroutineActivity : AppCompatActivity() {
                 for (x in 1..5) channel.send(x * x)
             }
             // here we print five received integers:
-            repeat(5) { LogUtil.debug("${channel.receive()}") }
+            repeat(5) { LogUtil.debug("channel receive:${channel.receive()}") }
             LogUtil.debug("Done!")
         }
 

@@ -22,7 +22,7 @@ class CoroutineLifecycle {
             @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
             fun onStateChanged(owner:LifecycleOwner, event: Lifecycle.Event) {
                 if (mLastEvent == Lifecycle.Event.ON_ANY) {
-                    LogUtil.debug("mLastEvent $event")
+                    LogUtil.debug("Lifecycle begin with $event")
                     mLastEvent = event
                     when (mLastEvent) {
                         Lifecycle.Event.ON_CREATE -> mTargetEvent = Lifecycle.Event.ON_DESTROY
@@ -31,7 +31,7 @@ class CoroutineLifecycle {
                     }
                 }
                 if (event == mTargetEvent) {
-                    LogUtil.debug("deferred cancel")
+                    LogUtil.debug("Lifecycle cancel with $event")
                     //cancel the coroutine
                     deferred.cancel()
                 }
@@ -57,3 +57,12 @@ fun <T> GlobalScope.asyncWithLifecycle(lifecycleOwner: LifecycleOwner,
     return job
 }
 
+/**
+ * 为协程block绑定lifecycle生命周期
+ */
+fun <T> GlobalScope.bindLifecycle(lifecycleOwner: LifecycleOwner,
+                                       block: CoroutineScope.() -> Deferred<T>): Deferred<T> {
+    val job = block.invoke(this)
+    CoroutineLifecycle().observe(lifecycleOwner, job)
+    return job
+}
