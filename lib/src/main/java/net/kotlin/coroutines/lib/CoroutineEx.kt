@@ -51,7 +51,7 @@ fun <T> GlobalScope.asyncWithLifecycle(lifecycleOwner: LifecycleOwner,
                                        onCompletion: CompletionHandler? = null,
                                        block: suspend CoroutineScope.() -> T): Deferred<T> {
     val job = GlobalScope.async(context, start, onCompletion, block)
-    net.kotlin.coroutines.lib.CoroutineLifecycle().observe(lifecycleOwner, job)
+    CoroutineLifecycle().observe(lifecycleOwner, job)
     return job
 }
 
@@ -61,7 +61,7 @@ fun <T> GlobalScope.asyncWithLifecycle(lifecycleOwner: LifecycleOwner,
 inline fun <T> GlobalScope.bindLifecycle(lifecycleOwner: LifecycleOwner,
                                        block: CoroutineScope.() -> Deferred<T>): Deferred<T> {
     val job = block.invoke(this)
-    net.kotlin.coroutines.lib.CoroutineLifecycle().observe(lifecycleOwner, job)
+    CoroutineLifecycle().observe(lifecycleOwner, job)
     return job
 }
 
@@ -74,16 +74,16 @@ inline fun <T> GlobalScope.bindLifecycle(lifecycleOwner: LifecycleOwner,
 suspend fun <T> Deferred<T>.awaitOrNull(time: Long = 0L,
                                         unit: TimeUnit = TimeUnit.MILLISECONDS,
                                         finalBlock: () -> Unit): T? {
-    try {
+    return try {
         if (time > 0) {
-            return withTimeout(time, unit) {
+            withTimeout(time, unit) {
                 this@awaitOrNull.await()
             }
         } else {
-            return this.await()
+            this.await()
         }
     } catch (e: Exception) {
-        return null
+        null
     } finally {
         finalBlock()
     }
