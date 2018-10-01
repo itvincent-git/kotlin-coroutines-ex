@@ -5,6 +5,7 @@ import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.OnLifecycleEvent
 import kotlinx.coroutines.experimental.*
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.experimental.CoroutineContext
 import kotlin.coroutines.experimental.EmptyCoroutineContext
 
@@ -62,4 +63,28 @@ inline fun <T> GlobalScope.bindLifecycle(lifecycleOwner: LifecycleOwner,
     val job = block.invoke(this)
     net.kotlin.coroutines.lib.CoroutineLifecycle().observe(lifecycleOwner, job)
     return job
+}
+
+/**
+ * 等待await的结果，如果出现异常或出现超时，则返回为null
+ * @param time 超时时长，默认为0，则不设置超时
+ * @param unit 时长单位
+ * @param finalBlock 无论正常还是异常都会执行的finally块
+ */
+suspend fun <T> Deferred<T>.awaitOrNull(time: Long = 0L,
+                                        unit: TimeUnit = TimeUnit.MILLISECONDS,
+                                        finalBlock: () -> Unit): T? {
+    try {
+        if (time > 0) {
+            return withTimeout(time, unit) {
+                this@awaitOrNull.await()
+            }
+        } else {
+            return this.await()
+        }
+    } catch (e: Exception) {
+        return null
+    } finally {
+        finalBlock()
+    }
 }
