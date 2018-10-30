@@ -67,16 +67,16 @@ inline fun <T> GlobalScope.bindLifecycle(lifecycleOwner: LifecycleOwner,
 
 /**
  * 等待await的结果，如果出现异常或出现超时，则返回为null
- * @param time 超时时长，默认为0，则不设置超时
+ * @param timeout 超时时长，默认为0，则不设置超时
  * @param unit 时长单位
  * @param finalBlock 无论正常还是异常都会执行的finally块
  */
-suspend fun <T> Deferred<T>.awaitOrNull(time: Long = 0L,
+suspend fun <T> Deferred<T>.awaitOrNull(timeout: Long = 0L,
                                         unit: TimeUnit = TimeUnit.MILLISECONDS,
                                         finalBlock: () -> Unit): T? {
     return try {
-        if (time > 0) {
-            withTimeout(time, unit) {
+        if (timeout > 0) {
+            withTimeout(timeout, unit) {
                 this@awaitOrNull.await()
             }
         } else {
