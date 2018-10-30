@@ -23,7 +23,8 @@
             android:screenOrientation="portrait" />
         <activity android:name=".MultiRequestActivity" />
         <activity android:name=".CallbackToDeferredActivity" />
-        <activity android:name=".CancelActivity"></activity>
+        <activity android:name=".CancelActivity" />
+        <activity android:name=".LaunchAllActivity"></activity>
     </application>
 
 </manifest>

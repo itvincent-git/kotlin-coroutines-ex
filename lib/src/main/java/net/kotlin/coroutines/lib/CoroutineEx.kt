@@ -88,3 +88,10 @@ suspend fun <T> Deferred<T>.awaitOrNull(timeout: Long = 0L,
         finalBlock()
     }
 }
+
+/**
+ * 执行全部的launch
+ */
+fun GlobalScope.launchAll(vararg args: suspend () -> Unit): List<Job> {
+    return args.map { launch { it() } }
+}
