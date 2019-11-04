@@ -2,8 +2,13 @@ package net.kotlin.coroutines.sample
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.channels.Channel
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.withTimeout
 import net.kotlin.coroutines.lib.asyncWithLifecycle
 
 class BaseCoroutineActivity : AppCompatActivity() {
@@ -67,6 +72,5 @@ class BaseCoroutineActivity : AppCompatActivity() {
             repeat(5) { LogUtil.debug("channel receive:${channel.receive()}") }
             LogUtil.debug("Done!")
         }
-
     }
 }

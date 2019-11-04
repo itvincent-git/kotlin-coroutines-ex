@@ -3,10 +3,11 @@ package net.kotlin.coroutines.sample
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_multi_request.*
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.android.Main
-import kotlinx.coroutines.experimental.channels.Channel
-import net.kotlin.coroutines.lib.asyncWithLifecycle
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import net.kotlin.coroutines.lib.bindLifecycle
 
 class MultiRequestActivity : AppCompatActivity() {
@@ -27,10 +28,9 @@ class MultiRequestActivity : AppCompatActivity() {
         }
     }
 
-
     suspend fun requestA() = GlobalScope.async {
-        val channel = Channel<Int>()
-        requestDelayCallback(500) {
+        val channel = Channel<Long>()
+        requestDelayCallback(500L) {
             channel.send(it)
         }
         val ret = channel.receive()
@@ -38,15 +38,14 @@ class MultiRequestActivity : AppCompatActivity() {
     }
 
     suspend fun requestB() = GlobalScope.async {
-        val channel = Channel<Int>()
+        val channel = Channel<Long>()
         requestDelayCallback(1000) {
             channel.send(it)
         }
         channel.receive()
     }
 
-
-    suspend fun requestDelayCallback(delayTime:Int, callback:suspend (Int) -> Unit) = GlobalScope.async {
+    suspend fun requestDelayCallback(delayTime: Long, callback: suspend (Long) -> Unit) = GlobalScope.async {
         delay(delayTime)
         callback(delayTime)
     }

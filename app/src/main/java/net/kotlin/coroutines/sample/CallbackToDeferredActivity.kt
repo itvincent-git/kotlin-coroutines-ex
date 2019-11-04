@@ -3,8 +3,7 @@ package net.kotlin.coroutines.sample
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.android.Main
+import kotlinx.coroutines.*
 import java.util.*
 
 /**
@@ -30,10 +29,9 @@ class CallbackToDeferredActivity : AppCompatActivity() {
         return deferred
     }
 
-    fun sendWithCallback(callback:(Int) -> Unit) {
+    fun sendWithCallback(callback: (Int) -> Unit) {
         window.decorView.postDelayed({
             callback(Random(System.currentTimeMillis()).nextInt())
         }, 2000)
     }
-
 }

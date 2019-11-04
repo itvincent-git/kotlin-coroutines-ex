@@ -4,10 +4,18 @@ import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.OnLifecycleEvent
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.CompletionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import java.util.concurrent.TimeUnit
-import kotlin.coroutines.experimental.CoroutineContext
-import kotlin.coroutines.experimental.EmptyCoroutineContext
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * 协程支持生命周期
@@ -18,9 +26,9 @@ class CoroutineLifecycle {
     var mTargetEvent: Lifecycle.Event = Lifecycle.Event.ON_ANY
 
     fun <T> observe(lifecycleOwner: LifecycleOwner, deferred: Deferred<T>) {
-        lifecycleOwner.lifecycle.addObserver(object: LifecycleObserver {
+        lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
-            fun onStateChanged(owner:LifecycleOwner, event: Lifecycle.Event) {
+            fun onStateChanged(owner: LifecycleOwner, event: Lifecycle.Event) {
                 if (mLastEvent == Lifecycle.Event.ON_ANY) {
                     mLastEvent = event
                     when (mLastEvent) {
@@ -45,12 +53,13 @@ class CoroutineLifecycle {
 /**
  * 执行异步任务并绑定生命周期
  */
-fun <T> GlobalScope.asyncWithLifecycle(lifecycleOwner: LifecycleOwner,
-                                       context: CoroutineContext = EmptyCoroutineContext,
-                                       start: CoroutineStart = CoroutineStart.DEFAULT,
-                                       onCompletion: CompletionHandler? = null,
-                                       block: suspend CoroutineScope.() -> T): Deferred<T> {
-    val job = GlobalScope.async(context, start, onCompletion, block)
+fun <T> GlobalScope.asyncWithLifecycle(
+    lifecycleOwner: LifecycleOwner,
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> T
+): Deferred<T> {
+    val job = GlobalScope.async(context, start, block)
     CoroutineLifecycle().observe(lifecycleOwner, job)
     return job
 }
@@ -58,8 +67,10 @@ fun <T> GlobalScope.asyncWithLifecycle(lifecycleOwner: LifecycleOwner,
 /**
  * 为协程block绑定lifecycle生命周期
  */
-inline fun <T> GlobalScope.bindLifecycle(lifecycleOwner: LifecycleOwner,
-                                       block: CoroutineScope.() -> Deferred<T>): Deferred<T> {
+inline fun <T> GlobalScope.bindLifecycle(
+    lifecycleOwner: LifecycleOwner,
+    block: CoroutineScope.() -> Deferred<T>
+): Deferred<T> {
     val job = block.invoke(this)
     CoroutineLifecycle().observe(lifecycleOwner, job)
     return job
@@ -71,12 +82,14 @@ inline fun <T> GlobalScope.bindLifecycle(lifecycleOwner: LifecycleOwner,
  * @param unit 时长单位
  * @param finalBlock 无论正常还是异常都会执行的finally块
  */
-suspend fun <T> Deferred<T>.awaitOrNull(timeout: Long = 0L,
-                                        unit: TimeUnit = TimeUnit.MILLISECONDS,
-                                        finalBlock: () -> Unit): T? {
+suspend fun <T> Deferred<T>.awaitOrNull(
+    timeout: Long = 0L,
+    unit: TimeUnit = TimeUnit.MILLISECONDS,
+    finalBlock: () -> Unit
+): T? {
     return try {
         if (timeout > 0) {
-            withTimeout(timeout, unit) {
+            withTimeout(unit.toMillis(timeout)) {
                 this@awaitOrNull.await()
             }
         } else {
