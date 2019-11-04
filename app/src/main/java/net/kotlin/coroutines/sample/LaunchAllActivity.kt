@@ -17,7 +17,11 @@ class LaunchAllActivity : AppCompatActivity() {
         setContentView(R.layout.activity_launch_all)
 
         GlobalScope.launch(context = Dispatchers.Main) {
-            GlobalScope.launchAll({ delay(100) }, { delay(1000) }, { delay(2000) }).joinAll()
+            launchAll(
+                { delay(100) },
+                { delay(1000) },
+                { delay(2000) }
+            ).joinAll()
             Toast.makeText(this@LaunchAllActivity, "all join done", Toast.LENGTH_SHORT).show()
         }
     }

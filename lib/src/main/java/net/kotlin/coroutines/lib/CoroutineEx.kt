@@ -53,7 +53,7 @@ class CoroutineLifecycle {
 /**
  * 执行异步任务并绑定生命周期
  */
-fun <T> GlobalScope.asyncWithLifecycle(
+fun <T> CoroutineScope.asyncWithLifecycle(
     lifecycleOwner: LifecycleOwner,
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
@@ -67,7 +67,7 @@ fun <T> GlobalScope.asyncWithLifecycle(
 /**
  * 为协程block绑定lifecycle生命周期
  */
-inline fun <T> GlobalScope.bindLifecycle(
+inline fun <T> CoroutineScope.bindLifecycle(
     lifecycleOwner: LifecycleOwner,
     block: CoroutineScope.() -> Deferred<T>
 ): Deferred<T> {
@@ -105,6 +105,6 @@ suspend fun <T> Deferred<T>.awaitOrNull(
 /**
  * 执行全部的launch
  */
-fun GlobalScope.launchAll(vararg args: suspend () -> Unit): List<Job> {
+fun CoroutineScope.launchAll(vararg args: suspend CoroutineScope.() -> Unit): List<Job> {
     return args.map { launch { it() } }
 }
