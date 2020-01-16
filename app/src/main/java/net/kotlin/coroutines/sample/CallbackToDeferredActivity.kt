@@ -1,10 +1,17 @@
 package net.kotlin.coroutines.sample
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
-import kotlinx.coroutines.*
-import java.util.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.util.Random
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * 将原来使用callback的方法，改为协程的方式
@@ -23,15 +30,26 @@ class CallbackToDeferredActivity : AppCompatActivity() {
 
     fun sendRequest(): Deferred<Int> {
         val deferred = CompletableDeferred<Int>()
-        sendWithCallback {
+        saveToRepositoryCallback({
             deferred.complete(it)
-        }
+        }, {
+        })
         return deferred
     }
 
-    fun sendWithCallback(callback: (Int) -> Unit) {
+    suspend fun saveToRepository(): Int {
+        return suspendCoroutine { continuation ->
+            saveToRepositoryCallback({
+                continuation.resume(it)
+            }, {
+                continuation.resumeWithException(it)
+            })
+        }
+    }
+
+    fun saveToRepositoryCallback(success: (Int) -> Unit, error: (Throwable) -> Unit) {
         window.decorView.postDelayed({
-            callback(Random(System.currentTimeMillis()).nextInt())
+            success(Random(System.currentTimeMillis()).nextInt())
         }, 2000)
     }
 }
