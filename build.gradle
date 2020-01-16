@@ -17,6 +17,9 @@ buildscript {
         url = 'https://github.com/itvincent-git/kotlin-coroutines-ex'
     }
     repositories {
+        maven {
+            url "http://repo.yypm.com:8181/nexus/content/groups/public"
+        }////公司内部maven地址
         google()
         jcenter()
     }
@@ -32,6 +35,9 @@ buildscript {
 
 allprojects {
     repositories {
+        maven {
+            url "http://repo.yypm.com:8181/nexus/content/groups/public"
+        }////公司内部maven地址
         google()
         jcenter()
     }

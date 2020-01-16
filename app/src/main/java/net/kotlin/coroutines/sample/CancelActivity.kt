@@ -11,9 +11,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.kotlin.coroutines.lib.awaitOrNull
+import net.slog.SLoggerFactory
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 
+private val log = SLoggerFactory.getLogger("CancelActivity")
 class CancelActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

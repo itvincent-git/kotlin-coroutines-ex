@@ -6,6 +6,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:name=".SampleApplication"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -24,7 +25,8 @@
         <activity android:name=".MultiRequestActivity" />
         <activity android:name=".CallbackToDeferredActivity" />
         <activity android:name=".CancelActivity" />
-        <activity android:name=".LaunchAllActivity"></activity>
+        <activity android:name=".LaunchAllActivity" />
+        <activity android:name=".SuspendActivity"></activity>
     </application>
 
 </manifest>
