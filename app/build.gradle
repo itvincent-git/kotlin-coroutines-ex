@@ -37,4 +37,6 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:1.1.1"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_android_version"
     implementation "net.slog:slog-file:0.9.0"
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation "net.stripe:coroutine:$stripe_coroutine_version"
 }
